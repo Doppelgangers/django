@@ -15,7 +15,7 @@ class Artwork(models.Model):
     """Название"""
     title = models.CharField(max_length=256, verbose_name='Название')
     english_title = models.CharField(max_length=256, verbose_name='Англиское название', blank=True, null=True)
-    alternative_title = models.ManyToManyField('AlternativeName', verbose_name='Англиское название')
+    alternative_title = models.ManyToManyField('AlternativeName', verbose_name='Альтернативные названия', blank=True)
 
     """Пренадлежит серии книг/сериалов/..."""
     series = models.ForeignKey('SeriesArtwork', on_delete=models.PROTECT)
@@ -42,12 +42,14 @@ class Artwork(models.Model):
     author = models.ForeignKey('Author', on_delete=models.SET_NULL, verbose_name='Автор', blank=True, null=True)
 
     """Пользовательские данные"""
-    creator = models.ManyToManyField(User, verbose_name='Автор записи', blank=True, null=True)
+    creator = models.ManyToManyField(User, verbose_name='Автор записи')
     viewing_date = models.DateTimeField(auto_now_add=True, verbose_name='Дата просмотра', blank=True)
     create_data = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания записи", blank=True)
 
     slug = models.SlugField(verbose_name="URL", unique=True, db_index=True, blank=True)
     is_active = models.BooleanField(default=True)
+
+    type_artwork = models.ForeignKey('TypeArtwork', on_delete=models.PROTECT, verbose_name="Тип произведения", blank=True, null=True)
 
     class Meta:
         ordering = ['-viewing_date']
@@ -82,3 +84,10 @@ class Author(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class TypeArtwork(models.Model):
+    title = models.CharField(max_length=256, verbose_name="Название типа произведения")
+
+    def __str__(self):
+        return self.title
